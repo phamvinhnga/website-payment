@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Serilog;
+using Website.Api.Enums;
 using Website.Api.Models.VnPays;
 using Website.Api.Options;
 
@@ -60,25 +61,24 @@ namespace Website.Api.Services
 
         public async Task<bool> PaymentResultAsync(VnPayReturnInput input)
         {
+            _logger.LogInformation("InputData={0}", JsonConvert.SerializeObject(input));
+
             var vnpay = new VnPayLibrary();
-  
             var properties = typeof(VnPayReturnInput).GetProperties();
             foreach (var property in properties.Where(property => property.Name.StartsWith("vnp_")))
             {
-                vnpay.AddResponseData(property.Name, property.GetValue(input).ToString());
+                vnpay.AddResponseData(property.Name, property.GetValue(input)?.ToString());
             }
 
-            bool checkSignature = vnpay.ValidateSignature(_vnpayOptions.VnpHashSecret, _vnpayOptions.VnpHashSecret);
+            bool checkSignature = vnpay.ValidateSignature(input.vnp_SecureHash, _vnpayOptions.VnpHashSecret);
             if (checkSignature)
             {
-                if (input.vnp_ResponseCode == "00" && input.vnp_TransactionStatus == "00")
+                if (Int32.Parse(input.vnp_ResponseCode) == (int)VnPayTransactionStatusCodeEnum.Success && Int32.Parse(input.vnp_TransactionStatus) == (int)VnPayTransactionStatusCodeEnum.Success)
                 {
-                    //Thanh toan thanh cong
                     _logger.LogInformation("Thanh toan thanh cong, OrderId={0}, VNPAY TranId={1}", input.vnp_TxnRef, input.vnp_TransactionNo);
                 }
                 else
                 {
-                    //Thanh toan khong thanh cong. Ma loi: vnp_ResponseCode
                     _logger.LogInformation("Thanh toan loi, OrderId={0}, VNPAY TranId={1},ResponseCode={2}", input.vnp_TxnRef, input.vnp_TransactionNo, input.vnp_ResponseCode);
                     return false;
                 }
