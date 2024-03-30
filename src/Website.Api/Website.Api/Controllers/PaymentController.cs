@@ -8,7 +8,7 @@ using Website.Api.Services;
 namespace Website.Api.Controllers
 {
     [ApiController]
-    [Route("payment")]
+    [Route("api/payment")]
     public class PaymentController : ControllerBase
     {
         private readonly IVnPayService _vnPayService;
@@ -36,7 +36,11 @@ namespace Website.Api.Controllers
                 return BadRequest("Không thể xác định địa chỉ IP của client.");
             }
 
-            return Ok(await _vnPayService.CreateNewPaymentAsync(input, remoteIpAddress));
+            return Ok(
+                new {
+                    PaymentUrl = await _vnPayService.CreateNewPaymentAsync(input, remoteIpAddress)
+                }
+            );
         }
     }
 }
