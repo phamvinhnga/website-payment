@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.X9;
 using Serilog;
 using Website.Api.Models.VnPays;
@@ -15,6 +16,14 @@ namespace Website.Api.Controllers
         public PaymentController(IVnPayService vnPayService)
         {
             _vnPayService = vnPayService;
+        }
+
+        [HttpGet("vnp-return")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateVnPaymentAsync([FromQuery] VnPayReturnInput input)
+        {
+            await _vnPayService.PaymentResultAsync(input);
+            return Redirect("https://mail.google.com/mail/u/0/#inbox/FMfcgzGxSRSCHXZBqDGsnhbXJxwCtZDw");
         }
 
         [HttpPost("vnp")]
