@@ -48,12 +48,13 @@ namespace Website.Api.Services
             vnpay.AddRequestData("vnp_Amount", (order.Amount * 100).ToString()); 
             vnpay.AddRequestData("vnp_CreateDate", order.CreatedDate.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
-            vnpay.AddRequestData("vnp_IpAddr", "::1");
+            vnpay.AddRequestData("vnp_IpAddr", ipAddress);
             vnpay.AddRequestData("vnp_Locale", "vn");
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + order.OrderId);
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
             vnpay.AddRequestData("vnp_ReturnUrl", _vnpayOptions.VnpReturnurl);
             vnpay.AddRequestData("vnp_TxnRef", order.OrderId.ToString());
+            vnpay.AddRequestData("vnp_BankCode", input.VnpBankCode);
 
             await Task.CompletedTask;
             //Add Params of 2.1.0 Version

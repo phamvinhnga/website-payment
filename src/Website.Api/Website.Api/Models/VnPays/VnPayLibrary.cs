@@ -61,7 +61,7 @@ namespace Website.Api.Models.VnPays
 
                 signData = signData.Remove(data.Length - 1, 1);
             }
-            string vnp_SecureHash = Utils.HmacSHA512(vnp_HashSecret, signData);
+            string vnp_SecureHash = HmacSHA512(vnp_HashSecret, signData);
             baseUrl += "vnp_SecureHash=" + vnp_SecureHash;
 
             return baseUrl;
@@ -76,9 +76,10 @@ namespace Website.Api.Models.VnPays
         public bool ValidateSignature(string inputHash, string secretKey)
         {
             string rspRaw = GetResponseData();
-            string myChecksum = Utils.HmacSHA512(secretKey, rspRaw);
+            string myChecksum = HmacSHA512(secretKey, rspRaw);
             return myChecksum.Equals(inputHash, StringComparison.InvariantCultureIgnoreCase);
         }
+
         private string GetResponseData()
         {
 
@@ -106,12 +107,7 @@ namespace Website.Api.Models.VnPays
             return data.ToString();
         }
 
-        #endregion
-    }
-
-    public class Utils
-    {
-        public static String HmacSHA512(string key, String inputData)
+        private static string HmacSHA512(string key, string inputData)
         {
             var hash = new StringBuilder();
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
@@ -127,23 +123,7 @@ namespace Website.Api.Models.VnPays
 
             return hash.ToString();
         }
-        //public static string GetIpAddress()
-        //{
-        //    string ipAddress;
-        //    try
-        //    {
-        //        ipAddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
-        //        if (string.IsNullOrEmpty(ipAddress) || (ipAddress.ToLower() == "unknown") || ipAddress.Length > 45)
-        //            ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ipAddress = "Invalid IP:" + ex.Message;
-        //    }
-
-        //    return ipAddress;
-        //}
+        #endregion
     }
-
 }

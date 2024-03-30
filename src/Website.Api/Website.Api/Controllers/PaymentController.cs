@@ -29,7 +29,14 @@ namespace Website.Api.Controllers
         [HttpPost("vnp")]
         public async Task<IActionResult> CreateVnPaymentAsync([FromBody] VnPayCreating input)
         {
-           return Ok(await _vnPayService.CreateNewPaymentAsync(input, ""));
+            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            if (string.IsNullOrEmpty(remoteIpAddress))
+            {
+                return BadRequest("Không thể xác định địa chỉ IP của client.");
+            }
+
+            return Ok(await _vnPayService.CreateNewPaymentAsync(input, remoteIpAddress));
         }
     }
 }
