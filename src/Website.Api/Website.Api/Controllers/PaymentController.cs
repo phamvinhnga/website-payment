@@ -23,7 +23,7 @@ namespace Website.Api.Controllers
         public async Task<IActionResult> CreateVnPaymentAsync([FromQuery] VnPayReturnInput input)
         {
             await _vnPayService.PaymentResultAsync(input);
-            return Redirect("https://mail.google.com/mail/u/0/#inbox/FMfcgzGxSRSCHXZBqDGsnhbXJxwCtZDw");
+            return Redirect("http://localhost:4200/thanh-toan");
         }
 
         [HttpPost("vnp")]
